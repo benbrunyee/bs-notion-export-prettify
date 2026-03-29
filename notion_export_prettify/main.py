@@ -139,16 +139,14 @@ def main():
         # NOTE: this cannot be done as an overlay, due to a bug in PyMuPDF
         if underlay_template := resources.get_resource_content("background.html"):
             green("[PROC] Rendering underlay templates for each page")
-            underlay_html = (
-                HtmlTemplator(underlay_template)
-                .inject(
-                    metadata,
-                    pageNumber="__PAGENUMBER__",
-                    hasCoverPage="hasCoverPage" if with_cover_page else "",
-                )
-                .add_css(page_css)
-                .html
+            underlay_meta_template = HtmlTemplator(underlay_template).inject(
+                metadata,
+                pageNumber="__PAGENUMBER__",
+                hasCoverPage="hasCoverPage" if with_cover_page else "",
             )
+            if page_css:
+                underlay_meta_template.add_css(page_css)
+            underlay_html = underlay_meta_template.html
             pdf_maker.merge_underlay_html(underlay_html)
         else:
             orange(
@@ -168,12 +166,10 @@ def main():
             cover_template = resources.get_resource_content("cover.html")
             if cover_template:
                 green("[PROC] Rendering cover template")
-                cover_html = (
-                    HtmlTemplator(cover_template)
-                    .inject(metadata)
-                    .add_css(page_css)
-                    .html
-                )
+                cover_meta_template = HtmlTemplator(cover_template).inject(metadata)
+                if page_css:
+                    cover_meta_template.add_css(page_css)
+                cover_html = cover_meta_template.html
             else:
                 orange("[SKIP] No HTML cover template found")
 
