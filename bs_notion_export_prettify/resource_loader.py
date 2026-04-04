@@ -17,5 +17,5 @@ class ResourceLoader:
     def get_resource_content(self, filename):
         file_path = self.get_resource_path(filename)
         if file_path:
-            with open(file_path, "r") as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 return f.read()

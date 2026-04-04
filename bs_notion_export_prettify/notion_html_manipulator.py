@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 class NotionHtmlManipulator:
     def __init__(self, html_path):
-        with open(html_path, "r") as file:
+        with open(html_path, "r", encoding="utf-8") as file:
             html_content = file.read()
             self.soup = BeautifulSoup(html_content, "html.parser")
 

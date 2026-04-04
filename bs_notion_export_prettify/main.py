@@ -12,8 +12,7 @@ from .pdf_maker import PdfMaker
 from .print_color import green, orange, red
 from .resource_loader import ResourceLoader
 
-logging.basicConfig(level=logging.DEBUG)
-logging.getLogger("asyncio").setLevel(logging.WARNING)
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
 def prettify(
@@ -138,7 +137,7 @@ def prettify(
 
         # 1.x. - Save to file
         updated_html_path = path.join(temp_dir, "updated_doc.html")
-        with open(updated_html_path, "w") as f:
+        with open(updated_html_path, "w", encoding="utf-8") as f:
             f.write(manipulator.get_html())
             logging.debug("Updated HTML saved to %s", updated_html_path)
 
@@ -225,6 +224,8 @@ def prettify(
 
 
 def main():
+    logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger("asyncio").setLevel(logging.WARNING)
     args = parse_args()
     prettify(**vars(args))
 
