@@ -4,6 +4,8 @@ from os import path
 import fitz  # PyMuPDF
 from playwright.sync_api import sync_playwright
 
+from .browser_setup import ensure_chromium_installed
+
 empty_template = """
 <html><body></body></html>
 """
@@ -20,6 +22,7 @@ class PdfMaker:
 
     def from_html_file(self, html_input_path):
         """PlayWright - modern replacement for pyppeteer"""
+        ensure_chromium_installed()
         with sync_playwright() as p:
             browser = p.chromium.launch()
             page = browser.new_page()
