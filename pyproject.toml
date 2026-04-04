@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "notion-export-prettify"
+name = "bs-notion-export-prettify"
 version = "1.3.2"
 description = ""
-authors = ["Fabre Lambeau <fabre.lambeau@gmail.com>"]
+authors = ["Fabre Lambeau <fabre.lambeau@gmail.com>", "Ben Brunyee <ben@brunyeestudio.com>"]
 readme = "README.md"
 include = ["templates/example", "templates/example-landscape"]
 
@@ -16,7 +16,7 @@ colorama = "^0.4.6"
 configargparse = "^1.7"
 
 [tool.poetry.scripts]
-notion-export-prettify = "notion_export_prettify.main:main"
+bs-notion-export-prettify = "bs_notion_export_prettify.main:main"
 
 [build-system]
 requires = ["poetry-core"]

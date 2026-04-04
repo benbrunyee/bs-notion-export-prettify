@@ -70,7 +70,7 @@ def main():
             "project": args.project or "",
             "author": args.author or "",
             "date": args.date or "",
-            "identifier": args.identifier or ""
+            "identifier": args.identifier or "",
         }
 
         # Get page.css
@@ -192,7 +192,7 @@ def main():
             dict(
                 title=metadata["title"],
                 creator="Notion",
-                producer=f"notion-export-prettify v{version('notion-export-prettify')}",
+                producer=f"bs-notion-export-prettify v{version('bs-notion-export-prettify')}",
                 author=metadata["author"],
                 subject=metadata["description"],
             )
