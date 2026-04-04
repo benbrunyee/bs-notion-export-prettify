@@ -68,6 +68,7 @@ class PdfMaker:
             # NOTE: there's an apparent bug in PyMuPDF when using overlay=True:
             #  dimensions of the overlay are 4x reduced and it is mirrored in both directions
             page.show_pdf_page(page.rect, underlay_pdf.pdf_doc, pno=0, overlay=False)
+            underlay_pdf.close()
 
     def merge_background_pdf(
         self,
@@ -77,6 +78,8 @@ class PdfMaker:
 
         for page in self.pdf_doc:
             page.show_pdf_page(page.rect, background, overlay=False)
+
+        background.close()
 
     def prepend_cover_page(self, cover_pdf_path, additional_html):
         final_cover_pdf_path = cover_pdf_path
@@ -94,6 +97,7 @@ class PdfMaker:
         titlepage = fitz.open(final_cover_pdf_path)
         # Insert first page at the beginning of the document
         self.pdf_doc.insert_pdf(titlepage, start_at=0)
+        titlepage.close()
 
         # Then reset the labels (to avoid two pages with number 1)
         labels = self.pdf_doc.get_page_labels()
@@ -141,7 +145,7 @@ class PdfMaker:
                     logging.debug(f"link '{text}' -> uri {link.get('uri')}")
                 elif link["kind"] == fitz.LINK_LAUNCH:
                     logging.debug(f"deleting link -> file {link.get('file')}")
-                    # LINK_LAUNCH links for images are not useful anymore as they point to the tempdir. 
+                    # LINK_LAUNCH links for images are not useful anymore as they point to the tempdir.
                     page.delete_link(link)
                 else:
                     logging.debug(f"link of type {link['kind']} with text '{text}'")
@@ -154,12 +158,18 @@ class PdfMaker:
                 if row != last_row:
                     final_toc.append(row)
                     last_row = row
-            
+
             self.pdf_doc.set_toc(final_toc)
         except Exception as e:
             logging.error(f"Error setting TOC: {e}")
+
+    def close(self):
+        if self.pdf_doc is not None:
+            self.pdf_doc.close()
+            self.pdf_doc = None
 
     def save(self, output_pdf_path=None):
         if not output_pdf_path:
             output_pdf_path = self.output_path
         self.pdf_doc.save(output_pdf_path)
+        self.close()
