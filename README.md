@@ -21,6 +21,44 @@ All of those are optional, and will just be done if associated resources are ava
 
 Templates?  Yes, you can also have several templates defined, and choose the one to apply when you run the tool.
 
+## Programmatic Usage
+
+The tool can be used as a Python module in addition to the CLI.
+
+```python
+from bs_notion_export_prettify import prettify
+
+output_path = prettify(
+    input_file="export.zip",        # or "export.html"
+    output="my-document.pdf",       # optional, defaults to title-based name next to input
+    template="example",             # optional, name, dir, or path to a template.cfg
+    title="My Document",            # optional metadata
+    subtitle="A subtitle",
+    description="Brief description",
+    project="My Project",
+    author="Jane Smith",
+    date="2026-04-04",
+    identifier="DOC-001",
+    cover_page=True,                # default True
+    heading_numbers=True,           # default True
+    strip_internal_info=True,       # default True
+    table_of_contents=True,         # default True
+)
+
+print(f"PDF saved to {output_path}")
+```
+
+The lower-level classes are also importable for custom pipelines:
+
+```python
+from bs_notion_export_prettify import (
+    NotionHtmlManipulator,
+    HtmlTemplator,
+    PdfMaker,
+    ResourceLoader,
+)
+```
+
 ## Documentation
 
 For full documentation, head to [this Notion page](https://fabrelambeau.notion.site/Notion-Export-Prettify-676b706adc09483dab72ebc89a1f210c), which you can also use as a source for the tool itself, to test it.
