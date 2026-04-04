@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bs-notion-export-prettify"
-version = "1.4.2"
+version = "1.4.3"
 description = ""
 authors = ["Fabre Lambeau <fabre.lambeau@gmail.com>", "Ben Brunyee <ben@brunyeestudio.com>"]
 readme = "README.md"
