@@ -7,9 +7,34 @@ from os import getcwd, path
 import configargparse
 
 
-# Function to manually find and modify the --config argument to make it a full path
-def modify_config_path(args):
+def resolve_template_path(template_arg: str) -> str:
+    """Resolve a template argument (name, dir, or file path) to a template.cfg file path."""
+    logging.debug(f"Template argument: {template_arg}")
 
+    if path.exists(template_arg):
+        if path.isfile(template_arg):
+            logging.debug(f"Template file at '{template_arg}'")
+            return template_arg
+        if path.isdir(template_arg):
+            return path.join(template_arg, "template.cfg")
+
+    logging.debug(f"No template file at '{template_arg}'")
+    candidate_template_dir = path.realpath(path.join(getcwd(), template_arg))
+    logging.debug(f"Checking for template in '{candidate_template_dir}'")
+    if path.exists(candidate_template_dir) and path.isdir(candidate_template_dir):
+        return path.join(candidate_template_dir, "template.cfg")
+
+    builtin_template_dir = path.realpath(
+        path.join(path.dirname(__file__), "../templates", template_arg)
+    )
+    logging.debug(f"Checking for template in '{builtin_template_dir}'")
+    if path.exists(builtin_template_dir) and path.isdir(builtin_template_dir):
+        return path.join(builtin_template_dir, "template.cfg")
+
+    return template_arg
+
+
+def modify_config_path(args: list) -> list:
     config_index = None
     for i, arg in enumerate(args):
         if arg in ("-t", "--template"):
@@ -17,43 +42,7 @@ def modify_config_path(args):
             break
 
     if config_index is not None and config_index < len(args):
-        template_arg = args[config_index]
-        logging.debug(f"Template argument: {template_arg}")
-
-        if path.exists(template_arg):
-            if path.isfile(template_arg):
-                logging.debug(f"Template file at '{template_arg}'")
-                return args
-            if path.isdir(template_arg):
-                template_file = path.join(template_arg, "template.cfg")
-                args[config_index] = template_file
-                return args
-
-        if not path.exists(template_arg):
-            logging.debug(f"No template file at '{template_arg}'")
-            # If the template argument is not a full path, try to find it in the current directory
-            candidate_template_dir = path.realpath(path.join(getcwd(), template_arg))
-            logging.debug(f"Checking for template in '{candidate_template_dir}")
-            if path.exists(candidate_template_dir) and path.isdir(
-                candidate_template_dir
-            ):
-                candidate_template_file = path.join(
-                    candidate_template_dir, "template.cfg"
-                )
-                args[config_index] = candidate_template_file
-            else:
-                # Try the built-in templates
-                builtin_template_dir = path.realpath(
-                    path.join(path.dirname(__file__), "../templates", template_arg)
-                )
-                logging.debug(f"Checking for template in '{builtin_template_dir}")
-                if path.exists(builtin_template_dir) and path.isdir(
-                    builtin_template_dir
-                ):
-                    builtin_template_file = path.join(
-                        builtin_template_dir, "template.cfg"
-                    )
-                    args[config_index] = builtin_template_file
+        args[config_index] = resolve_template_path(args[config_index])
 
     return args
 
