@@ -10,6 +10,16 @@ empty_template = """
 <html><body></body></html>
 """
 
+# Remote @font-face (e.g. Google Fonts) must finish before PDF capture; allow slow links.
+_DEFAULT_PRINT_READY_NETWORK_TIMEOUT_MS = 60_000
+
+
+def _wait_for_print_ready(page, *, network_timeout_ms: int) -> None:
+    """Block until the page network is idle and web fonts have finished loading."""
+    page.wait_for_load_state("networkidle", timeout=network_timeout_ms)
+    page.evaluate("() => document.fonts.ready")
+    logging.debug("Print-ready: networkidle and document.fonts.ready")
+
 
 class PdfMaker:
     def __init__(self, temp_dir, output_name=None):
@@ -27,8 +37,9 @@ class PdfMaker:
             browser = p.chromium.launch()
             page = browser.new_page()
 
-            # Navigate to the page
-            page.goto(f"file://{html_input_path}")
+            # Navigate to the page (load first; @import / link fonts may continue after DOMContentLoaded)
+            page.goto(f"file://{html_input_path}", wait_until="load")
+            _wait_for_print_ready(page, network_timeout_ms=_DEFAULT_PRINT_READY_NETWORK_TIMEOUT_MS)
 
             # Add PDF-specific overwrites
             # page.add_style_tag(
