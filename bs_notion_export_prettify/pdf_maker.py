@@ -55,9 +55,11 @@ class PdfMaker:
                 # margin=dict(top="0", right="0", bottom="0", left="0"),
             )
 
-            self.pdf_doc = fitz.open(self.output_path)
-
             browser.close()
+
+        with open(self.output_path, "rb") as f:
+            pdf_bytes = f.read()
+        self.pdf_doc = fitz.open(stream=pdf_bytes, filetype="pdf")
 
     def from_html(self, html_content):
         file_path = path.join(self.temp_dir, "additional_html.html")
